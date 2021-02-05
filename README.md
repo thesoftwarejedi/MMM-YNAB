@@ -2,6 +2,8 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/) which can show remaining dollars in categories from budgets from YNAB.
 
+![Example of MMM-YNAB](./screenshot.png)
+
 ## Installation ##
 
 1. Run `git clone https://github.com/thesoftwarejedi/MMM-YNAB.git` in the directory `~/MagicMirror/modules`
