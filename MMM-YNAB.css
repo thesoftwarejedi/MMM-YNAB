@@ -1,0 +1,16 @@
+/*
+ *
+ * MMM-YNAB
+ *
+ */
+
+ .module.MMM-YNAB .ynab-name {
+    margin-left: 15px;
+    margin-right: 5px;
+}
+
+.module.MMM-YNAB .ynab-balance {
+    margin-left: 5px;
+    margin-right: 15px;
+    color: green;
+}
