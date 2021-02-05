@@ -27,7 +27,7 @@ module.exports = NodeHelper.create({
 			this.updateBudget();
 			if (!interval) {
 				self = this;
-				interval = setInterval(this.updateBudget, 30000);
+				interval = setInterval(this.updateBudget, 90000);
 			}
 		}).catch(e => {
 			console.log("error: " + e);
