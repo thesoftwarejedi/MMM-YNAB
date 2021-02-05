@@ -1,5 +1,9 @@
 const ynab = require('ynab');
 var NodeHelper = require("node_helper");
+var ynabBudgetId;
+var config;
+var self;
+var interval;
 
 module.exports = NodeHelper.create({
 
@@ -12,51 +16,34 @@ module.exports = NodeHelper.create({
 
 	initialize: function (payload) {
 		console.log("initialize");
-		this.config = payload;
-		var ynabAPI = new ynab.API(this.config.token);
+		config = payload;
+		var ynabAPI = new ynab.API(config.token);
 
 		console.log("created api");
 
 		ynabAPI.budgets.getBudgets().then(budgetsResponse => {
 			console.log("budgetsResponse: " + JSON.stringify(budgetsResponse));
-			this.ynabBudgetId = budgetsResponse.data.budgets[0].id;
+			ynabBudgetId = budgetsResponse.data.budgets[0].id;
 			this.updateBudget();
-			setInterval(this.updateBudget, 30000);
+			if (!interval) {
+				self = this;
+				interval = setInterval(this.updateBudget, 30000);
+			}
 		}).catch(e => {
 			console.log("error: " + e);
 		});
 	},
 
 	updateBudget: function () {
-		console.log("updateBudget: " + this.ynabBudgetId);
-
-		var ynabAPI = new ynab.API(this.config.token);
-
+		console.log("updateBudget: " + ynabBudgetId);
+		var ynabAPI = new ynab.API(config.token);
 		console.log("created api");
-
-		ynabAPI.categories.getCategories(this.ynabBudgetId).then(categoriesResponse => {
-			console.log("categoriesResponse: " + JSON.stringify(categoriesResponse));
-
-			//transform categories to a map
-			var cats = {};
-			for (let grp of categoriesResponse.data.category_groups) {
-				cats = grp.categories.reduce(function (map, obj) {
-					if (!obj.hidden) {
-						map[obj.name] = obj;
-					}
-					return map;
-				}, cats);
-			}
-
-			//lookup the categories we want
-			var list = [];
-			for (let c of this.config.categories) {
-				if (cats.has(c)) {
-					list.push(cats[c]);
-				}
-			}
-
-			this.sendSocketNotification("UPDATE", {
+		ynabAPI.categories.getCategories(ynabBudgetId).then(categoriesResponse => {
+			console.log("got cats");
+			const map = [].concat(...Array.from(categoriesResponse.data.category_groups.map(a => Array.from(a.categories)))).reduce((map, o) => { map[o.name] = o; return map; }, new Map());
+			var list = config.categories.map(a => map[a]).filter(a => a != undefined);
+			console.log("list: " + JSON.stringify(list));
+			self.sendSocketNotification("UPDATE", {
 				items: list,
 			});
 			console.log("sent update");

@@ -1,7 +1,7 @@
 Module.register("MMM-YNAB", {
     defaults: {
         token: "",
-        categories: [ "Household", "Pets", "Grocery", "Kids Clothes", "Restaurants", "Lunch", "Spontaneous Fun" ]
+        categories: [ "Household", "Pets", "Grocery", "Lunch", "Kids Clothes", "Restaurants", "Spontaneous Fun" ]
     },
 
     start: function () {
@@ -23,7 +23,7 @@ Module.register("MMM-YNAB", {
         console.log("notification: " + notification);
         if (notification == "UPDATE") {
             this.data = payload;
-            this.updateDom(5000);
+            this.updateDom(0);
         }
     },
     
