@@ -1,7 +1,7 @@
 Module.register("MMM-YNAB", {
     defaults: {
         token: "",
-        categoryGroup: "Everyday Expenses"
+        categories: [ "Household", "Pets", "Grocery", "Kids Clothes", "Restaurants", "Lunch", "Spontaneous Fun" ]
     },
 
     start: function () {

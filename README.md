@@ -15,12 +15,15 @@ To use this module, get a YNAB access token for your YNAB account from https://a
 var config = {
     modules: [
         {
-        module: "MMM-YNAB",
-        position: "top_bar",
-        config: {
-            token: "ADD_YNAB_TOKEN_HERE"
+            module: "MMM-YNAB",
+            position: "top_bar",
+            config: {
+                token: "ADD_YNAB_TOKEN_HERE",
+                categories: [ "Household", "Pets", "Grocery", "Kids Clothes", "Restaurants", "Lunch", "Spontaneous Fun" ]
             }
         },
     ]
 }
 ```
+
+Your own categories will work, but the ones above are default

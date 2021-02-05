@@ -33,27 +33,31 @@ module.exports = NodeHelper.create({
 		var ynabAPI = new ynab.API(this.config.token);
 
 		console.log("created api");
-		
+
 		ynabAPI.categories.getCategories(this.ynabBudgetId).then(categoriesResponse => {
 			console.log("categoriesResponse: " + JSON.stringify(categoriesResponse));
 
-			var items = [];
+			//transform categories to a map
+			var cats = {};
 			for (let grp of categoriesResponse.data.category_groups) {
-				console.log("group: " + grp);
-				if (grp.name == this.config.categoryGroup) {
-					console.log("matched group");
-					for (let cat of grp.categories) {
-						if (!cat.hidden) {
-							console.log("cat: " + cat.name);
-							items.push(cat);
-						}
+				cats = grp.categories.reduce(function (map, obj) {
+					if (!obj.hidden) {
+						map[obj.name] = obj;
 					}
-					console.log("done matched group");
-					break;
+					return map;
+				}, cats);
+			}
+
+			//lookup the categories we want
+			var list = [];
+			for (let c of this.config.categories) {
+				if (cats.has(c)) {
+					list.push(cats[c]);
 				}
 			}
+
 			this.sendSocketNotification("UPDATE", {
-				items: items,
+				items: list,
 			});
 			console.log("sent update");
 		}).catch(e => {
