@@ -6,6 +6,9 @@ var self;
 var interval;
 
 module.exports = NodeHelper.create({
+	
+	var ynabBudgetId;
+	var ynabAPI;
 
 	socketNotificationReceived: function (noti, payload) {
 		console.log("Notification received: " + noti);
@@ -17,13 +20,15 @@ module.exports = NodeHelper.create({
 	initialize: function (payload) {
 		console.log("initialize");
 		config = payload;
-		var ynabAPI = new ynab.API(config.token);
+		this.ynabAPI = new ynab.API(config.token);
 
 		console.log("created api");
 
-		ynabAPI.budgets.getBudgets().then(budgetsResponse => {
+		this.ynabAPI.budgets.getBudgets().then(budgetsResponse => {
 			console.log("budgetsResponse: " + JSON.stringify(budgetsResponse));
-			ynabBudgetId = budgetsResponse.data.budgets[0].id;
+			//ynabBudgetId = budgetsResponse.data.budgets[0].id;
+			//ynabBudgetId = ynabAPI(config.budget_id);
+			this ynabBudgetId = "22c7f7a8-4924-4b12-97a9-7f198dd9025b";
 			this.updateBudget();
 			if (!interval) {
 				self = this;
@@ -35,10 +40,10 @@ module.exports = NodeHelper.create({
 	},
 
 	updateBudget: function () {
-		console.log("updateBudget: " + ynabBudgetId);
-		var ynabAPI = new ynab.API(config.token);
+		console.log("updateBudget: " + this.ynabBudgetId);
+		//var ynabAPI = new ynab.API(config.token);
 		console.log("created api");
-		ynabAPI.categories.getCategories(ynabBudgetId).then(categoriesResponse => {
+		this.ynabAPI.categories.getCategories(this.ynabBudgetId).then(categoriesResponse => {
 			console.log("got cats");
 			const map = [].concat(...Array.from(categoriesResponse.data.category_groups.map(a => Array.from(a.categories)))).reduce((map, o) => { map[o.name] = o; return map; }, new Map());
 			var list = config.categories.map(a => map[a]).filter(a => a != undefined);
