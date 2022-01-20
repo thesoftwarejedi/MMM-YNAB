@@ -15,18 +15,30 @@ module.exports = NodeHelper.create({
 
 	initialize: function (payload) {
 		config = payload;
+		self = this;
 		var ynabAPI = new ynab.API(config.token);
+
+		if (config.budgetId) {
+			ynabBudgetId = config.budgetId;
+			this.updateBudget();
+			this.setInterval();
+
+			return;
+		}
 
 		ynabAPI.budgets.getBudgets().then(budgetsResponse => {
 			ynabBudgetId = budgetsResponse.data.budgets[0].id;
 			this.updateBudget();
-			if (!interval) {
-				self = this;
-				interval = setInterval(this.updateBudget, 90000);
-			}
+			this.setInterval();
 		}).catch(e => {
 			console.log("error: " + e);
 		});
+	},
+
+	setInterval: function () {
+		if (!interval) {
+			interval = setInterval(self.updateBudget, 90000);
+		}
 	},
 
 	updateBudget: function () {
